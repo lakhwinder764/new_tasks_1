@@ -1,356 +1,507 @@
-import * as Yup from "yup";
 import PropTypes from "prop-types";
-import React, { useEffect, useState } from "react";
-import { SnackbarProvider, enqueueSnackbar } from "notistack";
+import React, { useState } from "react";
+import { SnackbarProvider } from "notistack";
 import {
   Grid,
   Typography,
   Box,
   DialogContent,
-  IconButton,
   Dialog,
   TextField,
   MenuItem,
-  InputAdornment,
   Button,
+  Radio,
+  LinearProgress,
 } from "@mui/material";
-import { useFormik } from "formik";
-import CloseIcon from "@mui/icons-material/Close";
-import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 
-const validationSchema = Yup.object().shape({
-  project_name: Yup.string().required("Required"),
-  clients: Yup.string().required("Required"),
-  new_client: Yup.string().required("Required"),
-  start_date: Yup.string().required("Required"),
-  end_date: Yup.string().required("Required"),
-  notes: Yup.string().required("Required"),
-});
-const clients = [
-  {
-    label: "Ramesh",
-    value: "ramesh",
-  },
-  {
-    label: "Rahul",
-    value: "rahul",
-  },
-  {
-    label: "Sahil",
-    value: "sahil",
-  },
-  {
-    label: "Ranjan",
-    value: "ranjan",
-  },
-];
+
+
 const CreateProjectModal = ({ steps, setSteps }) => {
-  const createForm = useFormik({
-    initialValues: {
-      project_name: "",
-      clients: "",
-      new_client: "",
-      start_date: "",
-      end_date: "",
-      notes: "",
+
+  const [radval, setRadVal] = useState(null);
+  const [radvals, setRadVals] = useState(null);
+  const [newPage, setNewPage] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [myname, setMyName] = useState(null);
+  const [names, setNames] = useState(null);
+  const [menu, setMenu] = useState(null);
+  const [menus, setMenus] = useState(null);
+  const commonStyle={
+      border: '1px solid grey',
+      borderRadius: 2,
+      m:2,
+    '&::before':{
+      content:'"All issues"',
+      display:'block',
+      color:'grey',
+      position:'absolute',
+      top:-35,
+      left:2,
+      fontSize:'18px'
     },
-    validationSchema,
-    enableReinitialize: true,
-    onSubmit: (values) => {
-      const payload = {
-        project_name: values?.project_name,
-        clients: values?.clients,
-        new_client: values?.new_client,
-        start_date: values?.start_date,
-        end_date: values?.end_date,
-        notes: values?.notes,
-      };
-      localStorage.setItem("create_project_data", JSON.stringify(payload));
-    },
-  });
-  const create_data = JSON.parse(localStorage.getItem("create_project_data"));
-  useEffect(() => {
-    createForm?.setValues({
-      project_name: create_data?.project_name,
-      clients: create_data?.clients,
-      new_client: create_data?.new_client,
-      start_date: create_data?.start_date,
-      end_date: create_data?.end_date,
-      notes: create_data?.notes,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  const [open, setOpen] = useState(true);
-  useEffect(() => {
-    setTimeout(() => {
-      setOpen(true);
-    }, [5000]);
-  });
-  const handleClose = () => {
-    setOpen(false);
-  };
+    display:'block',
+    mt:4, 
+    fontWeight:'bold',
+    textAlign:'center',
+    fontSize:'14px',
+    '&.MuiMenuItem-root':{
+      backgroundColor:'lightgrey'
+    }
+  }
+  const styles={
+    border: '1px solid grey',
+    borderRadius: 2,
+    fontSize:'14px',
+    m:2,
+  display:'block',
+  mt:4, 
+  fontWeight:'bold',
+  textAlign:'center',
+  '&.MuiMenuItem-root':{
+    backgroundColor:'lightgrey'
+  },
+  '&.MuiPaper-root .MuiPopover-paper .MuiMenu-paper':{
+    backgroundColor:'lightgrey'
+  }
+}
   return (
-    <Dialog open={open} maxWidth="md" fullWidth={true} disableEscapeKeyDown>
+    <Dialog open={true} maxWidth="md" fullWidth={true} disableEscapeKeyDown>
       <DialogContent dividers>
         <SnackbarProvider />
         <Grid item xs={12} pb={1}>
           <Box display="flex" flexDirection="column">
-            <Box
-              display="flex"
-              flexDirection="row"
-              alignItems="center"
-              justifyContent="flex-end"
-            >
-              <IconButton aria-label="close" onClick={handleClose} size="small">
-                <CloseIcon size="small" />
-              </IconButton>
+            <Box sx={{
+              width: '100%'
+            }}>
+            <LinearProgress variant="determinate" value={progress} color="error" sx={{
+              height: 5,
+              borderRadius: 16,
+            }}/>
             </Box>
-            <Box display="flex" alignItems="center" justifyContent="center">
+            <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
               <Typography
                 variant="subtitle1"
                 component="div"
                 fontWeight="bold"
                 fontSize={20}
+                color="red"
               >
-                Create a project
+                Let's get started!
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                component="div"
+                fontSize={14}
+                sx={{ color: "grey" }}
+              >
+                Add your details ( As per your registered records )
               </Typography>
             </Box>
           </Box>
         </Grid>
-        <Box
-          sx={{
-            p: 4,
-          }}
-        >
-          <Grid item xs={12} pb={1}>
-            <Box display="flex" flexDirection="column">
-              <Typography variant="subtitle2" fontWeight="bold" sx={{ pb: 1 }}>
-                Project name
-              </Typography>
-              <TextField
-                id="outlined-basic"
-                label=""
-                name="project_name"
-                variant="outlined"
-                placeholder="Enter project name here"
-                size="small"
-                value={createForm?.values?.project_name}
-                onChange={createForm?.handleChange}
-                error={Boolean(createForm?.errors?.project_name)}
-                helperText={
-                  createForm?.errors?.project_name &&
-                  createForm?.errors?.project_name
-                }
-              />
-            </Box>
-          </Grid>
-          <Grid
-            container
-            item
-            xs={12}
-            alignItems="flex-end"
+        {
+          newPage ? (
+            <Box
             sx={{
-              justifyContent: { sm: "space-between", xs: "flex-start" },
+              p: 4,
             }}
           >
+            <Grid item xs={12} pb={1}>
+              <Box display="flex" flexDirection="column">
+                <Typography variant="subtitle2" fontWeight="bold" sx={{ pb: 1 }}>
+                  Place where Driving License was issued
+                </Typography>
+                <TextField
+                  variant="outlined"
+                  placeholder="Enter Place Name"
+                  size="small"
+                  style={{
+                    backgroundColor:'lightgrey',
+                    color: '#C5C6D0'
+                  }}
+                  onBlur={() => {
+                    setProgress(names?.length >=3 ? progress>=100 ? 100 : progress + 16.6 : progress)
+                  }}
+                  onChange={(e) => setNames(e?.target?.value)}
+                  value={names=== null ? null : names}
+                />
+              </Box>
+            </Grid>
             <Grid
+              container
               item
-              sm={8}
               xs={12}
+              alignItems="flex-end"
               sx={{
-                mb: { sm: 0, xs: 2 },
+                justifyContent: { sm: "space-between", xs: "flex-start" },
               }}
             >
-              <Box display="flex" flexDirection="column">
-                <Typography
-                  variant="subtitle2"
-                  fontWeight="bold"
-                  sx={{ pt: 1, pb: 1 }}
-                >
-                  Client
-                </Typography>
-                <TextField
-                  id="outlined-basic"
-                  select
-                  label={!createForm?.values?.client ? "Select a client" : ""}
-                  name="clients"
-                  variant="outlined"
-                  size="small"
-                  value={createForm?.values?.clients}
-                  onChange={createForm?.handleChange}
-                  error={Boolean(createForm?.errors?.clients)}
-                  helperText={createForm?.errors?.clients}
-                >
-                  {clients.map((client) => (
-                    <MenuItem key={client.value} value={client.value}>
-                      {client.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Box>
+              <Grid
+                item
+                sm={12}
+                xs={12}
+                sx={{
+                  mb: { sm: 0, xs: 2 },
+                }}
+              >
+                <Box display="flex" flexDirection="column">
+                  <Typography
+                    variant="subtitle2"
+                    fontWeight="bold"
+                    sx={{ pt: 1, pb: 1 }}
+                  >
+                    Issue Year of License
+                  </Typography>
+             
+                  <TextField
+                    id="outlined-basic"
+                    select
+                    fullWidth
+                    style={{
+                      backgroundColor:'lightgrey',
+                      color: '#C5C6D0'
+                    }}
+                    onChange={(e) => {
+                      setMenu(e?.target?.value)
+                      setProgress(menu ? progress : progress>=100 ? 100 : progress + 16.6)
+                    }}
+                    label=""
+                    name="budget"
+                    variant="outlined"
+                    size="small"
+                    placeholder="ee"
+                  >
+                      <MenuItem key="sales" value="sales"
+                      sx={commonStyle}
+                      >
+                        Sales
+                      </MenuItem>
+                      <MenuItem key="pickup" value="pickup"
+                      sx={styles}
+                      >
+                        Document Pickup
+                      </MenuItem>
+                      <MenuItem key="dispatch" value="dispatch"
+                      sx={styles}
+                      >
+                        Document dispatch
+                      </MenuItem>
+                    
+                  </TextField>
+                </Box>
+                
+              </Grid>
             </Grid>
-            <Grid item sm={0.7} xs={1} pb={1}>
-              <Box display="flex" alignItems="center" justifyContent="center">
-                <Typography>Or</Typography>
-              </Box>
+            <Grid
+              container
+              item
+              xs={12}
+              alignItems="flex-end"
+              sx={{
+                justifyContent: { sm: "space-between", xs: "flex-start" },
+              }}
+            >
+              <Grid
+                item
+                sm={12}
+                xs={12}
+                sx={{
+                  mb: { sm: 0, xs: 2 },
+                }}
+              >
+                <Box display="flex" flexDirection="column">
+                  <Typography
+                    variant="subtitle2"
+                    fontWeight="bold"
+                    sx={{ pt: 1, pb: 1 }}
+                  >
+                    Type of Previous Driving License
+                  </Typography>
+             
+                  <TextField
+                    id="outlined-basic"
+                    select
+                    fullWidth
+                    onChange={(e) => {
+                      setMenus(e?.target?.value)
+                      setProgress(menus ? progress : progress>=100 ? 100 : progress + 16.6)
+                    }}
+                    style={{
+                      backgroundColor:'lightgrey',
+                      color: '#C5C6D0'
+                    }}
+                    label=""
+                    name="budget"
+                    variant="outlined"
+                    size="small"
+                    placeholder="ee"
+                  >
+                        <MenuItem key="sales" value="sales"
+                      sx={commonStyle}
+                      >
+                        Sales
+                      </MenuItem>
+                      <MenuItem key="pickup" value="pickup"
+                      sx={styles}
+                      >
+                        Document Pickup
+                      </MenuItem>
+                      <MenuItem key="dispatch" value="dispatch"
+                      sx={styles}
+                      >
+                        Document dispatch
+                      </MenuItem>
+                  </TextField>
+                </Box>
+                
+              </Grid>
             </Grid>
-            <Grid item sm={3.2} xs={11}>
-              <Box display="flex" flexDirection="column">
-                <TextField
-                  id="outlined-basic"
-                  name="new_client"
-                  variant="outlined"
-                  placeholder="New Client"
-                  size="small"
-                  value={createForm?.values?.new_client}
-                  onChange={createForm?.handleChange}
-                  error={Boolean(createForm?.errors?.new_client)}
-                  helperText={createForm?.errors?.new_client}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <AddIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Box>
+          
+            <Grid
+              container
+              item
+              xs={12}
+              mt={3}
+              alignItems="center"
+              justifyContent="center"
+            >
+                <Box>
+                  <Button
+                    variant="contained"
+                    startIcon={<ArrowBackIosIcon style={{
+                      width: 12,
+                      height: 12
+                    }}/>}
+                    color="error"
+                    sx={{
+                      width: 150,
+                      color:'white',
+                      borderRadius:4,
+                                 }}
+                    onClick={() => {
+                      setNewPage(false);
+                    }}
+                  >
+                    Back
+                  </Button>
+                </Box>
             </Grid>
-          </Grid>
-          <Grid
-            container
-            item
-            xs={12}
-            alignItems="flex-end"
-            gap={2}
+          </Box>
+          ) : (
+            <Box
             sx={{
-              justifyContent: { sm: "space-between", xs: "flex-start" },
+              p: 4,
             }}
           >
-            <Grid item xl={6} sm={5.7} xs={12}>
+            <Grid item xs={12} pb={1}>
               <Box display="flex" flexDirection="column">
-                <Typography
-                  variant="subtitle2"
-                  fontWeight="bold"
-                  sx={{ pt: 2, pb: 1 }}
-                >
-                  Dates
+                <Typography variant="subtitle2" fontWeight="bold" sx={{ pb: 1 }}>
+                  Name
                 </Typography>
                 <TextField
-                  id="outlined-basic"
-                  type="date"
-                  label=""
-                  name="start_date"
-                  size="small"
-                  value={createForm?.values?.start_date}
-                  onChange={createForm?.handleChange}
-                  error={Boolean(createForm?.errors?.start_date)}
-                  helperText={createForm?.errors?.start_date}
-                />
-              </Box>
-            </Grid>
-            <Grid item sm={5.7} xs={12}>
-              <Box display="flex" flexDirection="column">
-                <TextField
-                  id="outlined-basic"
-                  type="date"
-                  label=""
-                  name="end_date"
-                  size="small"
-                  value={createForm?.values?.end_date}
-                  onChange={createForm?.handleChange}
-                  error={Boolean(createForm?.errors?.end_date)}
-                  helperText={createForm?.errors?.end_date}
-                />
-              </Box>
-            </Grid>
-          </Grid>
-          <Grid container item xs={12} alignItems="flex-end">
-            <Grid item xs={12}>
-              <Box display="flex" flexDirection="column">
-                <Typography
-                  variant="subtitle2"
-                  fontWeight="bold"
-                  sx={{ pt: 2, pb: 1 }}
-                >
-                  Notes
-                </Typography>
-                <TextField
-                  id="outlined-basic"
-                  multiline
-                  label=""
-                  name="notes"
+                   onBlur={() => {
+                    setProgress(myname?.length >=3 ? progress>=100 ? 100 : progress + 16.6 : progress)
+                  }}
+                  onChange={(e) => setMyName(e?.target?.value)}
+                  value={myname}
                   variant="outlined"
-                  placeholder="optional"
+                  placeholder="Enter Name"
                   size="small"
-                  value={createForm?.values?.notes}
-                  onChange={createForm?.handleChange}
-                  error={Boolean(createForm?.errors?.notes)}
-                  helperText={createForm?.errors?.notes}
+                  style={{
+                    backgroundColor:'lightgrey',
+                    color: '#C5C6D0'
+                  }}
+                  InputProps={{ notched: false }}
                 />
               </Box>
             </Grid>
-          </Grid>
-          <Grid
-            container
-            item
-            xs={12}
-            mt={3}
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Grid item sm={5} xs={6}>
-              <Box>
-                <Button
-                  variant="text"
-                  startIcon={<ArrowBackIosIcon />}
-                  size="small"
+            <Grid
+              container
+              item
+              xs={12}
+              alignItems="flex-end"
+              sx={{
+                justifyContent: { sm: "space-between", xs: "flex-start" },
+              }}
+            >
+              <Grid
+                item
+                sm={12}
+                xs={12}
+                sx={{
+                  mb: { sm: 2, xs: 2 },
+                  mt: { sm: 2, xs: 2 },
+                }}
+              >
+                <Box display="flex" flexDirection="column">
+                  <Typography
+                    variant="subtitle2"
+                    fontWeight="bold"
+                    sx={{ pt: 1, pb: 1 }}
+                  >
+                    Nature of Driving License
+                  </Typography>
+             
+                  <Box display="flex" justifyContent="space-between" flexWrap="wrap">
+                  <Box display="flex"
+                   p={0.5}
+                  flexGrow={1} alignItems="center" backgroundColor="lightgrey" borderRadius={4}>
+                  <Radio id="driving" style={{
+                    color:'grey'
+                  }}
+                  checked={'radio1'=== radval}
+                  onChange={()=> {
+                    setRadVal('radio1')
+                    setProgress(radval!=='radio2'? progress>=100 ? 100 : progress + 16.6 : progress)
+                  }}
+                  />
+                  <Typography
+                    variant="subtitle2"
+                    color="grey"
+                  >
+                    Private
+                  </Typography>
+                  </Box>
+                  <Box display="flex" flexGrow={1} alignItems="center" borderRadius={4} backgroundColor="lightgrey"
+                  p={0.5}
                   sx={{
-                    color: "grey",
-                  }}
-                  onClick={() => {
-                    setSteps(steps);
-                  }}
-                >
-                  Back
-                </Button>
-              </Box>
-            </Grid>
-            <Grid item sm={7} xs={4}>
-              <Box>
-                <Button
-                  variant="contained"
-                  sx={{
-                    width: 100,
-                  }}
-                  onClick={() => {
-                    createForm?.handleSubmit();
-                    if (Object.keys(createForm?.errors)?.length === 0) {
-                      enqueueSnackbar("Form Submitted!!!", {
-                        variant: "success",
-                      });
-                      setTimeout(() => {
-                        setSteps(steps + 1);
-                      }, [1000]);
+                    ml: {lg: 3, md: 3, sm: 3, xs:0 },
+                    mt:{
+                      lg: 0,
+                      md: 0,
+                      sm: 0,
+                      xs: 2
                     }
                   }}
-                >
-                  Next
-                </Button>
-              </Box>
+                  >
+                  <Radio id="driving"
+                  style={{
+                    color:'grey'
+                  }}
+                  checked={'radio2'=== radval}
+                  onChange={()=> {
+                    setRadVal('radio2')
+                    setProgress(radval!=='radio1'? progress>=100 ? 100 : progress + 16.6 : progress)
+                  }}
+                  />
+  
+                  <Typography
+                    variant="subtitle2"
+                    color='grey'
+                  >
+                    Commercial
+                  </Typography>
+                  </Box>
+                  </Box>
+                </Box>
+                
+              </Grid>
             </Grid>
-          </Grid>
-        </Box>
-        <Grid item xs={12} pb={1} p={4}>
-          <Typography
-            sx={{
-              color: "#ff6347",
-            }}
-          >
-            Click on next button to open next modal
-          </Typography>
-        </Grid>
+            <Grid
+              container
+              item
+              xs={12}
+              alignItems="flex-end"
+              gap={2}
+              sx={{
+                justifyContent: { sm: "space-between", xs: "flex-start" },
+              }}
+            >
+                <Grid
+                item
+                sm={12}
+                xs={12}
+                sx={{
+                  mb: { sm: 0, xs: 2 },
+                }}
+              >
+                <Box display="flex" flexDirection="column">
+                  <Typography
+                    variant="subtitle2"
+                    fontWeight="bold"
+                    sx={{ pt: 1, pb: 1 }}
+                  >
+                   Type of Previous Driving License  
+                  </Typography>
+             
+                  <Box display="flex" justifyContent="space-between" flexWrap="wrap">
+                  <Box display="flex" 
+                   p={0.5}
+                  flexGrow={1} mt={2} alignItems="center" backgroundColor="lightgrey" borderRadius={4}>
+                  <Radio id="driving"
+                  style={{
+                    color:'grey'
+                  }}
+                  checked={'radio3'=== radvals}
+                  onChange={()=> {
+                    setRadVals('radio3')
+                    setProgress(radvals!=='radio4'? progress>=100 ? 100 : progress + 16.6 : progress)
+                  }}
+                  />
+                  <Typography
+                    variant="subtitle2"
+                    color="grey"
+                  >
+                    Paper Driving License
+                  </Typography>
+                  </Box>
+                  <Box display="flex"  mt={2} sx={{
+                    ml: {lg: 3, md: 3, sm: 3, xs:0 },
+                  }} 
+                  p={0.5}
+                  flexGrow={1} alignItems="center" borderRadius={4} backgroundColor="lightgrey"
+                  >
+                  <Radio id="driving"
+                  style={{
+                    color:'grey'
+                  }}
+                  checked={'radio4'=== radvals}
+                  onChange={()=> {
+                    setRadVals('radio4')
+                    setProgress(radvals!=='radio3'? progress>=100 ? 100 : progress + 16.6 : progress)
+                  }}
+                  />
+                  <Typography
+                    variant="subtitle2"
+                    color="grey"
+                  >
+                    Smart Driving License
+                  </Typography>
+                  </Box>
+                  </Box>
+                </Box>
+                
+              </Grid>
+            </Grid>
+          
+            <Grid
+              container
+              item
+              xs={12}
+              mt={3}
+              alignItems="center"
+              justifyContent="center"
+            >
+                <Box>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    sx={{
+                      width: 150,
+                      color:'white',
+                      borderRadius:4                  }}
+                    onClick={() => {
+                      setNewPage(true)
+                    }}
+                  >
+                    Next
+                  </Button>
+                </Box>
+            </Grid>
+          </Box>
+          )
+        }
       </DialogContent>
     </Dialog>
   );
