@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import React, { useState } from "react";
 import { SnackbarProvider } from "notistack";
 import {
@@ -16,8 +15,7 @@ import {
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 
 
-
-const CreateProjectModal = ({ steps, setSteps }) => {
+const CreateProjectModal = () => {
 
   const [radval, setRadVal] = useState(null);
   const [radvals, setRadVals] = useState(null);
@@ -506,8 +504,5 @@ const CreateProjectModal = ({ steps, setSteps }) => {
     </Dialog>
   );
 };
-CreateProjectModal.propTypes = {
-  steps: PropTypes.func.isRequired,
-  setSteps: PropTypes.number.isRequired,
-};
+
 export default CreateProjectModal;
